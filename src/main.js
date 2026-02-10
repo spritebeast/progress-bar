@@ -11,8 +11,7 @@ k.loadCrew("font", "happy-o");
 k.scene("bar-scene", () => {
     const TOTAL_TIME = 15;
     let timeLeft = TOTAL_TIME;
-    let blinkTimer = 0;
-    const BLINK_TIME = 0.2;
+    let blinking = false;
     let maxWidth = k.width() - 30;
     let currentWidth = maxWidth;
 
@@ -38,26 +37,46 @@ k.scene("bar-scene", () => {
         k.pos(k.width() / 2, bar.height / 2 + 20),
         k.color(255, 255, 255),
         k.anchor("center"),
+        k.scale(1),
     ]);
 
-    bar.onUpdate(() => {
+    k.onUpdate(() => {
         timeLeft -= k.dt();
         timeLeft = Math.max(timeLeft, 0);
-        let displayTime = Math.floor(timeLeft);
+        let displayTime = Math.ceil(timeLeft);
         timeLeftTxt.text = displayTime.toString();
 
-        if (timeLeft < 11) { timeLeftTxt.color = k.rgb(255, 255, 0); }
+        if (timeLeft < 10 && !blinking) timeLeftTxt.color = k.rgb(255, 255, 0);
 
-        if (timeLeft < 6) {
-            blinkTimer += k.dt();
+        if (timeLeft < 5 && !blinking && timeLeft > 0) {
+            blinking = true;
             timeLeftTxt.color = k.rgb(255, 0, 0);
+            
+            k.loop(1.0, () => {
+                if (timeLeft <= 0) return;
+                
+                k.tween(
+                    1,
+                    2.25,
+                    0.5,
+                    (val) => {
+                        timeLeftTxt.scale = k.vec2(val, val);
+                    },
+                    k.easings.easeOutQuad,
+                );
 
-            if (blinkTimer >= BLINK_TIME) {
-                blinkTimer = 0;
-                timeLeftTxt.hidden = !timeLeftTxt.hidden;
-            }
-        } else {
-            timeLeftTxt.hidden = false;
+                k.wait(0.5, () => {
+                    k.tween(
+                        2.25,
+                        1,
+                        0.5,
+                        (val) => {
+                            timeLeftTxt.scale = k.vec2(val, val);
+                        },
+                        k.easings.easeInQuad,
+                    );
+                });
+            });
         }
 
         let ratio = Math.max(timeLeft / TOTAL_TIME, 0);
