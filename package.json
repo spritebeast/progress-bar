@@ -1,0 +1,18 @@
+{
+	"name": "/home/spritebeast/dev/progress-bar",
+	"type": "module",
+	"scripts": {
+		"build": "vite build",
+		"dev": "vite",
+		"preview": "vite preview",
+		"zip": "npm run build && mkdir -p dist && zip -r dist/game.zip dist -x \"**/.DS_Store\""
+	},
+	"dependencies": {
+		"@kaplayjs/crew": "^2.1.0",
+		"kaplay": "^4000.0.0-alpha.26"
+	},
+	"devDependencies": {
+		"@types/node": "^25.2.2",
+		"vite": "^7.3.1"
+	}
+}
